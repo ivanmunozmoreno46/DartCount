@@ -9,9 +9,25 @@ interface SetupProps {
 }
 
 export default function Setup({ onStart, onShowRules }: SetupProps) {
-  const [mode, setMode] = React.useState<GameMode>('High Score');
+  const [mode, setMode] = React.useState<GameMode>('301');
   const [players, setPlayers] = React.useState<PlayerCount>(1);
   const [rounds, setRounds] = React.useState(10);
+
+  const handleStart = () => {
+    onStart(mode, players, rounds);
+  };
+
+  const handleModeChange = (m: GameMode) => {
+    setMode(m);
+  };
+
+  const handlePlayerChange = (p: PlayerCount) => {
+    setPlayers(p);
+  };
+
+  const handleRoundsChange = (r: number) => {
+    setRounds(r);
+  };
 
   return (
     <motion.div 
@@ -19,7 +35,7 @@ export default function Setup({ onStart, onShowRules }: SetupProps) {
       animate={{ opacity: 1, y: 0 }}
       className="max-w-md mx-auto p-6 space-y-8"
     >
-      <div className="text-center space-y-2">
+      <div className="text-center space-y-2 relative">
         <h1 className="text-4xl font-serif font-bold text-[var(--color-gold)] tracking-tight uppercase">
           DartCount
         </h1>
@@ -33,7 +49,7 @@ export default function Setup({ onStart, onShowRules }: SetupProps) {
             {(['301', 'High Score'] as GameMode[]).map((m) => (
               <button
                 key={m}
-                onClick={() => setMode(m)}
+                onClick={() => handleModeChange(m)}
                 className={`py-4 rounded-2xl font-serif text-sm border-2 transition-all duration-300 ${
                   mode === m 
                     ? 'bg-[var(--color-felt-green)] border-[var(--color-gold)] text-[var(--color-cream)] shadow-[0_0_20px_rgba(0,0,0,0.5)]' 
@@ -53,7 +69,7 @@ export default function Setup({ onStart, onShowRules }: SetupProps) {
               {[5, 10, 15].map((r) => (
                 <button
                   key={r}
-                  onClick={() => setRounds(r)}
+                  onClick={() => handleRoundsChange(r)}
                   className={`py-2 rounded-xl font-bold transition-all ${
                     rounds === r 
                       ? 'bg-[var(--color-gold)] text-[var(--color-wood-dark)]' 
@@ -71,7 +87,7 @@ export default function Setup({ onStart, onShowRules }: SetupProps) {
           <label className="text-xs uppercase tracking-widest text-[var(--color-gold)] font-bold">Jugadores</label>
           <div className="grid grid-cols-2 gap-4">
             <button
-              onClick={() => setPlayers(1)}
+              onClick={() => handlePlayerChange(1)}
               className={`flex flex-col items-center justify-center py-4 rounded-2xl border-2 transition-all duration-300 ${
                 players === 1 
                   ? 'bg-[var(--color-felt-green)] border-[var(--color-gold)] text-[var(--color-cream)] shadow-[0_0_20px_rgba(0,0,0,0.5)]' 
@@ -82,7 +98,7 @@ export default function Setup({ onStart, onShowRules }: SetupProps) {
               <span className="font-medium">1 Jugador</span>
             </button>
             <button
-              onClick={() => setPlayers(2)}
+              onClick={() => handlePlayerChange(2)}
               className={`flex flex-col items-center justify-center py-4 rounded-2xl border-2 transition-all duration-300 ${
                 players === 2 
                   ? 'bg-[var(--color-felt-green)] border-[var(--color-gold)] text-[var(--color-cream)] shadow-[0_0_20px_rgba(0,0,0,0.5)]' 
@@ -96,7 +112,7 @@ export default function Setup({ onStart, onShowRules }: SetupProps) {
         </div>
 
         <button
-          onClick={() => onStart(mode, players, rounds)}
+          onClick={handleStart}
           className="w-full py-5 bg-[var(--color-gold)] text-[var(--color-wood-dark)] rounded-2xl font-bold text-lg hover:bg-[var(--color-cream)] transition-colors shadow-xl flex items-center justify-center gap-2"
         >
           <Target className="w-5 h-5" />

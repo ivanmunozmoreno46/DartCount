@@ -13,6 +13,11 @@ export default function Dartboard({ onScore, disabled }: DartboardProps) {
   const center = size / 2;
   const radius = size * 0.45;
 
+  const handleScore = (score: number) => {
+    if (disabled) return;
+    onScore(score);
+  };
+
   const getCoordinatesForAngle = (angle: number, r: number) => {
     const x = center + r * Math.cos((angle - 90) * (Math.PI / 180));
     const y = center + r * Math.sin((angle - 90) * (Math.PI / 180));
@@ -37,10 +42,10 @@ export default function Dartboard({ onScore, disabled }: DartboardProps) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-2 bg-stone-900/40 rounded-3xl border border-stone-800 shadow-inner">
+    <div className="flex flex-col items-center justify-center p-1 bg-stone-900/40 rounded-3xl border border-stone-800 shadow-inner w-full">
       <svg 
         viewBox={`0 0 ${size} ${size}`} 
-        className={`w-full max-w-[320px] h-auto transition-opacity ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
+        className={`w-full max-w-[450px] h-auto transition-opacity ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
       >
         {/* Background circle */}
         <circle cx={center} cy={center} r={radius + 25} fill="#111" />
@@ -60,25 +65,25 @@ export default function Dartboard({ onScore, disabled }: DartboardProps) {
               <path
                 d={createArcPath(startAngle, endAngle, radius * 0.9, radius)}
                 fill={altColor}
-                onClick={() => onScore(num * 2)}
+                onClick={() => handleScore(num * 2)}
               />
               {/* Single Outer */}
               <path
                 d={createArcPath(startAngle, endAngle, radius * 0.6, radius * 0.9)}
                 fill={baseColor}
-                onClick={() => onScore(num)}
+                onClick={() => handleScore(num)}
               />
               {/* Triple Ring */}
               <path
                 d={createArcPath(startAngle, endAngle, radius * 0.5, radius * 0.6)}
                 fill={altColor}
-                onClick={() => onScore(num * 3)}
+                onClick={() => handleScore(num * 3)}
               />
               {/* Single Inner */}
               <path
                 d={createArcPath(startAngle, endAngle, radius * 0.15, radius * 0.5)}
                 fill={baseColor}
-                onClick={() => onScore(num)}
+                onClick={() => handleScore(num)}
               />
               
               {/* Numbers */}
@@ -98,24 +103,23 @@ export default function Dartboard({ onScore, disabled }: DartboardProps) {
           );
         })}
 
-        {/* Bulls */}
         <circle 
           cx={center} cy={center} r={radius * 0.15} 
           fill="#064e3b" 
           className="cursor-pointer hover:brightness-125"
-          onClick={() => onScore(25)}
+          onClick={() => handleScore(25)}
         />
         <circle 
           cx={center} cy={center} r={radius * 0.06} 
           fill="#991b1b" 
           className="cursor-pointer hover:brightness-125"
-          onClick={() => onScore(50)}
+          onClick={() => handleScore(50)}
         />
       </svg>
       
       <div className="mt-4 flex gap-4">
         <button 
-          onClick={() => onScore(0)}
+          onClick={() => handleScore(0)}
           className="px-6 py-2 bg-stone-800 text-stone-400 rounded-full text-xs font-bold uppercase tracking-widest border border-stone-700 hover:bg-stone-700"
         >
           Miss / 0

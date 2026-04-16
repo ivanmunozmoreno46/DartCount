@@ -22,6 +22,7 @@ export default function App() {
 
   const [showRules, setShowRules] = React.useState(false);
   const [showHistory, setShowHistory] = React.useState(false);
+  const [showResetConfirm, setShowResetConfirm] = React.useState(false);
 
   const startGame = (mode: GameMode, count: PlayerCount, rounds: number) => {
     const players: Player[] = Array.from({ length: count }, (_, i) => ({
@@ -117,6 +118,7 @@ export default function App() {
 
   const resetGame = () => {
     setState(prev => ({ ...prev, status: 'setup', winner: null }));
+    setShowResetConfirm(false);
   };
 
   return (
@@ -133,7 +135,7 @@ export default function App() {
             className="flex-1 flex flex-col"
           >
             <header className="p-6 flex items-center justify-between">
-              <button onClick={resetGame} className="p-2 text-[var(--color-gold)] opacity-60 hover:opacity-100 transition-opacity">
+              <button onClick={() => setShowResetConfirm(true)} className="p-2 text-[var(--color-gold)] opacity-60 hover:opacity-100 transition-opacity">
                 <Settings className="w-6 h-6" />
               </button>
               <div className="text-center">
@@ -216,6 +218,46 @@ export default function App() {
                 Jugar de nuevo
               </button>
             </div>
+          </motion.div>
+        )}
+
+        {showResetConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-6"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-[var(--color-wood-dark)] border-2 border-[var(--color-wood-grain)] rounded-[40px] p-8 w-full max-w-sm space-y-8 shadow-[0_20px_50px_rgba(0,0,0,0.8)] text-center"
+            >
+              <div className="bg-[var(--color-wood-mid)] w-20 h-20 rounded-full flex items-center justify-center mx-auto border-2 border-[var(--color-gold)]/20 shadow-inner">
+                <RotateCcw className="w-10 h-10 text-[var(--color-gold)]" />
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="text-[var(--color-gold)] font-serif font-bold text-2xl uppercase tracking-tight">¿Reiniciar partida?</h3>
+                <p className="text-[var(--color-gold)]/50 text-sm">Perderás todo el progreso de la partida actual.</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  onClick={() => setShowResetConfirm(false)}
+                  className="py-4 bg-[var(--color-wood-mid)] text-[var(--color-gold)] rounded-2xl font-bold text-xs uppercase tracking-widest border-2 border-[var(--color-wood-grain)] transition-all active:scale-95"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={resetGame}
+                  className="py-4 bg-[var(--color-felt-green)] text-[var(--color-cream)] rounded-2xl font-bold text-xs uppercase tracking-widest border border-[var(--color-gold)]/30 shadow-lg transition-all active:scale-95"
+                >
+                  Reiniciar
+                </button>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
