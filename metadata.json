@@ -1,0 +1,6 @@
+{
+  "name": "DartCount",
+  "description": "A simple and elegant darts scoring app with 301/501 modes, 1-2 players support, and a classic wood-and-green aesthetic.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
