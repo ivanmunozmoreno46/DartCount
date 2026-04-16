@@ -1,5 +1,6 @@
 import React from 'react';
-import { Delete, Check, ArrowLeft } from 'lucide-react';
+import { Delete, Check, Target as TargetIcon, Hash } from 'lucide-react';
+import Dartboard from './Dartboard';
 
 interface KeypadProps {
   onAddDart: (score: number) => void;
@@ -11,6 +12,7 @@ interface KeypadProps {
 
 export default function Keypad({ onAddDart, onUndoDart, onConfirmTurn, currentDarts, canConfirm }: KeypadProps) {
   const [input, setInput] = React.useState('');
+  const [view, setView] = React.useState<'keypad' | 'dartboard'>('dartboard');
 
   const handleNumber = (num: string) => {
     if (input.length >= 2) return;
@@ -36,50 +38,79 @@ export default function Keypad({ onAddDart, onUndoDart, onConfirmTurn, currentDa
           <span className="text-[var(--color-gold)] opacity-50 text-[10px] font-bold uppercase tracking-widest">Dardo {currentDarts.length + 1}</span>
           <span className="text-3xl font-serif font-bold text-[var(--color-cream)]">{input || '0'}</span>
         </div>
-        <button 
-          onClick={handleAdd}
-          disabled={input === '' || currentDarts.length >= 3}
-          className="bg-[var(--color-felt-green)] text-[var(--color-cream)] px-8 py-4 rounded-2xl font-bold border border-[var(--color-gold)]/30 shadow-lg disabled:opacity-50 transition-all active:scale-95"
-        >
-          Añadir
-        </button>
+        <div className="flex gap-2">
+          <button 
+            onClick={() => setView(view === 'keypad' ? 'dartboard' : 'keypad')}
+            className="bg-[var(--color-wood-dark)] text-[var(--color-gold)] p-4 rounded-2xl border border-[var(--color-wood-grain)] shadow-lg transition-all active:scale-95"
+            title={view === 'keypad' ? 'Usar Diana' : 'Usar Teclado'}
+          >
+            {view === 'keypad' ? <TargetIcon className="w-6 h-6" /> : <Hash className="w-6 h-6" />}
+          </button>
+          {view === 'keypad' && (
+            <button 
+              onClick={handleAdd}
+              disabled={input === '' || currentDarts.length >= 3}
+              className="bg-[var(--color-felt-green)] text-[var(--color-cream)] px-8 py-4 rounded-2xl font-bold border border-[var(--color-gold)]/30 shadow-lg disabled:opacity-50 transition-all active:scale-95"
+            >
+              Añadir
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-3">
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 'C', 0, 'DEL'].map((btn) => (
-          <button
-            key={btn}
-            onClick={() => {
-              if (btn === 'C') handleClear();
-              else if (btn === 'DEL') {
-                if (input) setInput(input.slice(0, -1));
-                else onUndoDart();
-              }
-              else handleNumber(btn.toString());
-            }}
-            className={`h-16 rounded-2xl text-2xl font-serif font-bold transition-all active:scale-95 shadow-md border-b-4 border-[var(--color-wood-grain)] ${
-              typeof btn === 'number' 
-                ? 'bg-[var(--color-wood-dark)] text-[var(--color-gold)] hover:bg-[var(--color-wood-grain)]' 
-                : 'bg-[var(--color-wood-grain)] text-[var(--color-gold)]/70'
-            }`}
-          >
-            {btn === 'DEL' ? <Delete className="w-6 h-6 mx-auto" /> : btn}
-          </button>
-        ))}
-      </div>
+      {view === 'keypad' ? (
+        <>
+          <div className="grid grid-cols-4 gap-3">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 'C', 0, 'DEL'].map((btn) => (
+              <button
+                key={btn}
+                onClick={() => {
+                  if (btn === 'C') handleClear();
+                  else if (btn === 'DEL') {
+                    if (input) setInput(input.slice(0, -1));
+                    else onUndoDart();
+                  }
+                  else handleNumber(btn.toString());
+                }}
+                className={`h-16 rounded-2xl text-2xl font-serif font-bold transition-all active:scale-95 shadow-md border-b-4 border-[var(--color-wood-grain)] ${
+                  typeof btn === 'number' 
+                    ? 'bg-[var(--color-wood-dark)] text-[var(--color-gold)] hover:bg-[var(--color-wood-grain)]' 
+                    : 'bg-[var(--color-wood-grain)] text-[var(--color-gold)]/70'
+                }`}
+              >
+                {btn === 'DEL' ? <Delete className="w-6 h-6 mx-auto" /> : btn}
+              </button>
+            ))}
+          </div>
 
-      <div className="grid grid-cols-4 gap-3">
-        {quickScores.map((s) => (
-          <button
-            key={s}
-            onClick={() => onAddDart(s)}
-            disabled={currentDarts.length >= 3}
-            className="h-12 bg-[var(--color-wood-dark)]/50 border border-[var(--color-wood-grain)] rounded-xl text-[var(--color-gold)] font-bold hover:bg-[var(--color-wood-grain)] disabled:opacity-50 text-xs uppercase tracking-widest"
+          <div className="grid grid-cols-4 gap-3">
+            {quickScores.map((s) => (
+              <button
+                key={s}
+                onClick={() => onAddDart(s)}
+                disabled={currentDarts.length >= 3}
+                className="h-12 bg-[var(--color-wood-dark)]/50 border border-[var(--color-wood-grain)] rounded-xl text-[var(--color-gold)] font-bold hover:bg-[var(--color-wood-grain)] disabled:opacity-50 text-xs uppercase tracking-widest"
+              >
+                {s === 0 ? 'Miss' : s}
+              </button>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className="flex flex-col items-center">
+          <Dartboard 
+            onScore={onAddDart} 
+            disabled={currentDarts.length >= 3} 
+          />
+          <button 
+            onClick={onUndoDart}
+            disabled={currentDarts.length === 0}
+            className="mt-4 text-[var(--color-gold)] opacity-60 hover:opacity-100 text-xs font-bold uppercase tracking-widest flex items-center gap-2 disabled:opacity-20"
           >
-            {s === 0 ? 'Miss' : s}
+            <Delete className="w-4 h-4" /> Borrar último dardo
           </button>
-        ))}
-      </div>
+        </div>
+      )}
 
       <button
         onClick={onConfirmTurn}
